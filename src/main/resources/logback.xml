@@ -12,6 +12,9 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="catscaffe" level="DEBUG"/>
+    <!--<logger name="catscaffe.domain" level="DEBUG"/>-->
+    <logger name="catscaffe.listeners" level="DEBUG"/>
+    <!--<logger name="catscaffe.service" level="DEBUG"/>-->
+    <logger name="catscaffe.views" level="DEBUG"/>
 
 </configuration>
