@@ -63,14 +63,15 @@ trait AggregateRoot extends PersistentActor with ActorLogging {
    * @param evt Event that has been persisted
    */
   protected def afterEventPersisted(evt: Event): Unit = {
+    log.debug(s"$persistenceId :: {} event received", evt)
+    updateAndRespond(evt)
+    publish(evt)
     eventsSinceLastSnapshot += 1
     if (eventsSinceLastSnapshot >= eventsPerSnapshot) {
-      log.debug("{} events reached, saving snapshot", eventsPerSnapshot)
+      log.debug(s"$persistenceId :: {} events reached, saving snapshot $state", eventsPerSnapshot)
       saveSnapshot(state)
       eventsSinceLastSnapshot = 0
     }
-    updateAndRespond(evt)
-    publish(evt)
   }
 
   private def updateAndRespond(evt: Event): Unit = {
@@ -88,11 +89,12 @@ trait AggregateRoot extends PersistentActor with ActorLogging {
 
   override val receiveRecover: Receive = {
     case evt: Event =>
+      log.debug(s"$persistenceId :: recover {}", evt)
       eventsSinceLastSnapshot += 1
       updateState(evt)
     case SnapshotOffer(metadata, state: State) =>
       restoreFromSnapshot(metadata, state)
-      log.debug("recovering aggregate from snapshot")
+      log.debug(s"recovering aggregate from snapshot $state")
   }
 
   protected def restoreFromSnapshot(metadata: SnapshotMetadata, state: State)

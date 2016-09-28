@@ -64,25 +64,20 @@ class CatAggregate(id: String) extends AggregateRoot {
     case CatAdded(catname, breed_id, hungerLevel) =>
       context.become(created)
       state = Cat(id, catname, breed_id, hungerLevel)
-      println(s"Yey! There's a new cat in town and her name is $catname")
 
     case CatFed(quantityOfFood) =>
-      context.become(created)
       state match {
         case c: Cat =>
           val newState = c.copy(hungerLevel = feed(c.hungerLevel, quantityOfFood))
           state = newState
-          println(s"${newState.catname} says 'Yummy!' My hunger level is now ${newState.hungerLevel}")
         case _ => // no cat to feed
       }
 
     case CatPlayed(minutes) =>
-      context.become(created)
       state match {
         case c: Cat =>
           val newState = c.copy(hungerLevel = play(c.hungerLevel, minutes))
           state = newState
-          println(s"${newState.catname} says 'That was fun!' but my hunger level is now ${newState.hungerLevel}")
         case _ => // no cat to feed
       }
 
